@@ -1,0 +1,100 @@
+<html>
+<head>
+    <title>Screen Saver</title>
+    <style>
+@keyframes hue {
+  from { --hue: 0; }
+  to { --hue: 360; }
+}
+
+@keyframes saturation {
+  from { --saturation: 100%; }
+  to { --saturation: 0%; }
+}
+
+@keyframes lightness {
+  from { --lightness: 100%; }
+  to { --lightness: 0%; }
+}
+ 
+@property --hue {
+  syntax: "<number> | <angle>";
+  inherits: false;
+  initial-value: 0;
+}
+ 
+@property --saturation {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+ 
+@property --lightness {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --progress {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+body {
+  animation: 67s linear calc(-1s * var(--progress)) alternate infinite hue,
+             101s linear calc(-1s * var(--progress)) alternate infinite saturation,
+             157s linear calc(-1s * var(--progress)) alternate infinite lightness;
+  background-color: hsl(var(--hue), var(--saturation), var(--lightness));
+  cursor: none;
+}
+
+@keyframes fadeout {
+0% { opacity: 0; }
+20% { opacity: 1; }
+50% { opacity: 1; }
+100% { opacity: 0; }
+}
+.notice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  /* a nice blue, not too dark but not too light */
+  color: #4a90e2;
+  font-family: sans-serif;
+  font-size: 2em;
+  text-shadow: 0.2em 0.2em 0.2em black;
+  opacity: 1;
+  animation: 15s forwards fadeout;
+}
+
+</style>
+<script>
+var wakeLock = null;
+async function toggleFullscreen() {
+  let doc = document.documentElement;
+  try {
+    if (!document.fullscreenElement) {
+        doc.style.cursor = "none";
+        doc.requestFullscreen();
+        wakeLock = await navigator.wakeLock.request("screen");
+    } else {
+        doc.style.cursor = "auto";
+        document.exitFullscreen();
+        wakeLock.release();
+    }
+  }
+  catch (err) { console.log(`${err.name}, ${err.message}`); }
+}
+
+</script>
+</head>
+<body onclick="toggleFullscreen()" onkeypress="toggleFullscreen()">
+  <div class="notice">
+    <h1>Screen Saver</h1>
+    <p>Click or press any key<br/>to toggle full screen<br/>and wake lock.</p>
+  </div>
+</body>
+</html>
